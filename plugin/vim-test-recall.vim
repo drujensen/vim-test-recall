@@ -112,10 +112,16 @@ function! RunRSpecTest(filename)
   end
 endfunction
 
+function! RunJasmineTest(filename)
+  exec ":!snapdragon " . a:filename
+endfunction
+
 function! RunTests(filename)
   :w
   if match(a:filename, '\.feature') != -1
     call RunCucumberTest(a:filename)
+  elseif match(a:filename, '\spec.js\|Spec.js') != -1
+    call RunJasmineTest(a:filename)
   else
     call RunRSpecTest(a:filename)
   end
@@ -136,7 +142,7 @@ function! RemoveTestLineNum()
 endfunction
 
 function! RunNearestTest()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\)$') != -1
+  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|spec.js\|Spec.js\)$') != -1
   if in_test_file
     call StoreCurrentFileAsTestFile()
     call StoreCurrentLineNumAsTestLineNum()
@@ -151,7 +157,7 @@ function! RunTestsInCurrentFile()
 endfunction
 
 function! RunAllTestsInCurrentTestFile()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\)$') != -1
+  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|spec.js\|Spec.js\)$') != -1
   if in_test_file
     call StoreCurrentFileAsTestFile()
     call RemoveTestLineNum()
