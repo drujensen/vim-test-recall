@@ -91,7 +91,9 @@ function! PersistetBufferRunTests(filename)
 endfunction
 
 function! RunCucumberTest(filename)
-  if filereadable("zeus.json")
+  if exists("g:vim_test_recall_cucumber_command")
+    exec ":!" . g:vim_test_recall_cucumber_command . " " . a:filename
+  elseif filereadable("zeus.json")
     exec ":!zeus cucumber " . a:filename
   elseif filereadable("script/features")
     exec ":!script/features " . a:filename
@@ -101,7 +103,9 @@ function! RunCucumberTest(filename)
 endfunction
 
 function! RunRSpecTest(filename)
-  if filereadable("zeus.json")
+  if exists("g:vim_test_recall_rspec_command")
+    exec ":!" . g:vim_test_recall_rspec_command . " " . a:filename
+  elseif filereadable("zeus.json")
     exec ":!zeus test --color " . a:filename
   elseif filereadable("script/test")
     exec ":!script/test " . a:filename
@@ -113,7 +117,13 @@ function! RunRSpecTest(filename)
 endfunction
 
 function! RunJasmineTest(filename)
-  exec ":!snapdragon " . a:filename
+  if exists("g:vim_test_recall_snapdragon_command")
+    exec ":!" . g:vim_test_recall_snapdragon_command . " " . a:filename
+  elseif filereadable("Gemfile")
+    exec ":!bundle exec snapdragon " . a:filename
+  elseif
+    exec ":!snapdragon " . a:filename
+  end
 endfunction
 
 function! RunTests(filename)
