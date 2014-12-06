@@ -3,7 +3,8 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! RunCucumberTest(filename)
   if exists("g:vim_test_recall_cucumber_command")
-    exec ":!" . g:vim_test_recall_cucumber_command . " " . a:filename
+    let command = substitute(g:vim_test_recall_cucumber_command, "{feature}", a:filename, "")
+    exec ":" . command
   elseif filereadable("bin/cucumber")
     exec ":!bin/cucumber " . a:filename
   elseif filereadable("zeus.json")
@@ -17,7 +18,8 @@ endfunction
 
 function! RunRSpecTest(filename)
   if exists("g:vim_test_recall_rspec_command")
-    exec ":!" . g:vim_test_recall_rspec_command . " " . a:filename
+    let command = substitute(g:vim_test_recall_rspec_command, "{spec}", a:filename, "")
+    exec ":" . command
   elseif filereadable("bin/rspec")
     exec ":!bin/rspec --color " . a:filename
   elseif filereadable("zeus.json")
