@@ -33,6 +33,15 @@ function! RunRSpecTest(filename)
   end
 endfunction
 
+function! RunCrystalTest(filename)
+  if exists("g:vim_test_recall_rspec_command")
+    let command = substitute(g:vim_test_recall_crystal_command, "{spec}", a:filename, "")
+    exec ":" . command
+  else
+    exec ":!crystal spec " . a:filename
+  end
+endfunction
+
 function! RunJasmineTest(filename)
   if exists("g:vim_test_recall_snapdragon_command")
     exec ":!" . g:vim_test_recall_snapdragon_command . " " . a:filename
@@ -47,7 +56,9 @@ function! RunTests(filename)
   :w
   if match(a:filename, '\.feature') != -1
     call RunCucumberTest(a:filename)
-  elseif match(a:filename, '\spec.js\|Spec.js') != -1
+ elseif match(a:filename, '_spec.cr') != -1
+     call RunCrystalTest(a:filename)
+ elseif match(a:filename, '\spec.js\|Spec.js') != -1
     call RunJasmineTest(a:filename)
   else
     call RunRSpecTest(a:filename)
@@ -69,7 +80,7 @@ function! RemoveTestLineNum()
 endfunction
 
 function! RunNearestTest()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|spec.js\|Spec.js\)$') != -1
+  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|spec.js\|Spec.js\)$') != -1
   if in_test_file
     call StoreCurrentFileAsTestFile()
     call StoreCurrentLineNumAsTestLineNum()
@@ -84,7 +95,7 @@ function! RunTestsInCurrentFile()
 endfunction
 
 function! RunAllTestsInCurrentTestFile()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|spec.js\|Spec.js\)$') != -1
+  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|spec.js\|Spec.js\)$') != -1
   if in_test_file
     call StoreCurrentFileAsTestFile()
     call RemoveTestLineNum()
@@ -95,7 +106,11 @@ function! RunAllTestsInCurrentTestFile()
 endfunction
 
 function! RunAllRSpecTests()
-  call RunTests('spec/')
+  if filereadable("spec/spec_helper.cr")
+    call RunCrystalTest('spec/')
+  else
+    call RunRSpecTest('spec/')
+  endif
 endfunction
 
 function! RunAllCucumberFeatures()
