@@ -7,10 +7,6 @@ function! RunCucumberTest(filename)
     exec ":" . command
   elseif filereadable("bin/cucumber")
     exec ":!bin/cucumber " . a:filename
-  elseif filereadable("zeus.json")
-    exec ":!zeus cucumber " . a:filename
-  elseif filereadable("script/features")
-    exec ":!script/features " . a:filename
   else
     exec ":!bundle exec cucumber " . a:filename
   end
@@ -22,10 +18,6 @@ function! RunRSpecTest(filename)
     exec ":" . command
   elseif filereadable("bin/rspec")
     exec ":!bin/rspec --color " . a:filename
-  elseif filereadable("zeus.json")
-    exec ":!zeus test --color " . a:filename
-  elseif filereadable("script/test")
-    exec ":!script/test " . a:filename
   elseif filereadable("Gemfile")
     exec ":!bundle exec rspec --color " . a:filename
   else
@@ -42,13 +34,12 @@ function! RunCrystalTest(filename)
   end
 endfunction
 
-function! RunJasmineTest(filename)
-  if exists("g:vim_test_recall_snapdragon_command")
-    exec ":!" . g:vim_test_recall_snapdragon_command . " " . a:filename
-  elseif filereadable("Gemfile")
-    exec ":!bundle exec snapdragon " . a:filename
-  elseif
-    exec ":!snapdragon " . a:filename
+function! RunJavascriptTest(filename)
+  if exists("g:vim_test_recall_javascript_command")
+    let command = substitute(g:vim_test_recall_javascript_command, "{spec}", a:filename, "")
+    exec ":" . command
+ elseif
+    exec ":!jasmine " . a:filename
   end
 endfunction
 
@@ -56,10 +47,10 @@ function! RunTests(filename)
   :w
   if match(a:filename, '\.feature') != -1
     call RunCucumberTest(a:filename)
- elseif match(a:filename, '_spec.cr') != -1
+ elseif match(a:filename, 'spec.cr') != -1
      call RunCrystalTest(a:filename)
  elseif match(a:filename, '\spec.js\|Spec.js') != -1
-    call RunJasmineTest(a:filename)
+    call RunJavascriptTest(a:filename)
   else
     call RunRSpecTest(a:filename)
   end
