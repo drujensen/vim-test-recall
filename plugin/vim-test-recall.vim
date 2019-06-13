@@ -49,7 +49,7 @@ function! RunTests(filename)
     call RunCucumberTest(a:filename)
  elseif match(a:filename, 'spec.cr') != -1
      call RunCrystalTest(a:filename)
- elseif match(a:filename, '\spec.js\|Spec.js') != -1
+ elseif match(a:filename, 'test.js\|spec.js\|Spec.js') != -1
     call RunJavascriptTest(a:filename)
   else
     call RunRSpecTest(a:filename)
@@ -71,7 +71,7 @@ function! RemoveTestLineNum()
 endfunction
 
 function! RunNearestTest()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|spec.js\|Spec.js\)$') != -1
+  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|test.js\|spec.js\|Spec.js\)$') != -1
   if in_test_file
     call StoreCurrentFileAsTestFile()
     call StoreCurrentLineNumAsTestLineNum()
@@ -86,7 +86,7 @@ function! RunTestsInCurrentFile()
 endfunction
 
 function! RunAllTestsInCurrentTestFile()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|spec.js\|Spec.js\)$') != -1
+  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|test.js\|spec.js\|Spec.js\)$') != -1
   if in_test_file
     call StoreCurrentFileAsTestFile()
     call RemoveTestLineNum()
