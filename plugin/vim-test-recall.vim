@@ -43,15 +43,26 @@ function! RunJavascriptTest(filename)
   end
 endfunction
 
+function! RunPythonTest(filename)
+  if exists("g:vim_test_recall_python_command")
+    let command = substitute(g:vim_test_recall_python_command, "{spec}", a:filename, "")
+    exec ":" . command
+ elseif
+    exec ":!pytest " . a:filename
+  end
+endfunction
+
 function! RunTests(filename)
   :w
   if match(a:filename, '\.feature') != -1
     call RunCucumberTest(a:filename)
- elseif match(a:filename, 'spec.cr') != -1
+ elseif match(a:filename, '\.cr') != -1
      call RunCrystalTest(a:filename)
- elseif match(a:filename, 'test.js\|spec.js\|Spec.js') != -1
+ elseif match(a:filename, '\.js') != -1
     call RunJavascriptTest(a:filename)
-  else
+ elseif match(a:filename, '\.py') != -1
+    call RunPythonTest(a:filename)
+ else
     call RunRSpecTest(a:filename)
   end
 endfunction
@@ -71,13 +82,8 @@ function! RemoveTestLineNum()
 endfunction
 
 function! RunNearestTest()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|test.js\|spec.js\|Spec.js\)$') != -1
-  if in_test_file
-    call StoreCurrentFileAsTestFile()
-    call StoreCurrentLineNumAsTestLineNum()
-  elseif !exists("t:grb_test_file") || !exists("t:grb_test_line")
-    return
-  end
+  call StoreCurrentFileAsTestFile()
+  call StoreCurrentLineNumAsTestLineNum()
   call RunTests(t:grb_test_file . ":" . t:grb_test_line)
 endfunction
 
@@ -86,13 +92,8 @@ function! RunTestsInCurrentFile()
 endfunction
 
 function! RunAllTestsInCurrentTestFile()
-  let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|_spec.cr\|test.js\|spec.js\|Spec.js\)$') != -1
-  if in_test_file
-    call StoreCurrentFileAsTestFile()
-    call RemoveTestLineNum()
-  elseif !exists("t:grb_test_file")
-    return
-  end
+  call StoreCurrentFileAsTestFile()
+  call RemoveTestLineNum()
   call RunTests(t:grb_test_file)
 endfunction
 
