@@ -62,6 +62,8 @@ function! RunTests(filename)
     call RunJavascriptTest(a:filename)
  elseif match(a:filename, '\.py') != -1
     call RunPythonTest(a:filename)
+ elseif match(a:filename, '\.clj') != -1
+    exec ":RunTests"
  else
     call RunRSpecTest(a:filename)
   end
